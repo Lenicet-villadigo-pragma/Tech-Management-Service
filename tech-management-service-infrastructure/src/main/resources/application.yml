@@ -1,0 +1,10 @@
+spring:
+  r2dbc:
+    url: r2dbc:mysql://<tu_url>:<tu_port>/<tu_bd>
+    username: tu_user
+    password: tu_password
+    properties:
+      sslMode: DISABLED
+  sql:
+    init:
+      mode: always
