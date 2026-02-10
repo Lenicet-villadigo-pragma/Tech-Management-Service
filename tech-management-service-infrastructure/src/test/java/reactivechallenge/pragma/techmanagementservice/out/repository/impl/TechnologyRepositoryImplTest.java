@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
-import reactivechallenge.pragma.techmanagementservice.error.RegisterAlreadyExistsException;
+import reactivechallenge.pragma.techmanagementservice.error.BusinessDomainException;
 import reactivechallenge.pragma.techmanagementservice.mapper.TechnologyEntityMapper;
 import reactivechallenge.pragma.techmanagementservice.model.TechnologyModel;
 import reactivechallenge.pragma.techmanagementservice.out.entity.TechnologyEntity;
@@ -72,7 +72,7 @@ class TechnologyRepositoryImplTest {
 
         // Assert
         StepVerifier.create(result)
-                .expectError(RegisterAlreadyExistsException.class)
+                .expectError(BusinessDomainException.class)
                 .verify();
     }
 }

@@ -1,4 +1,4 @@
-package reactivechallenge.pragma.techmanagementservice.error;
+package reactivechallenge.pragma.techmanagementservice.input.exception;
 
 public class GenericDataBaseException extends RuntimeException {
     public GenericDataBaseException() {super();}

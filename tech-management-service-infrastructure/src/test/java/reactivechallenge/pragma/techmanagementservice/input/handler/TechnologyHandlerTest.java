@@ -11,8 +11,8 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.springframework.web.server.ResponseStatusException;
 import reactivechallenge.pragma.techmanagementservice.api.IRegisterTechnologyServicePort;
+import reactivechallenge.pragma.techmanagementservice.error.BusinessDomainException;
 import reactivechallenge.pragma.techmanagementservice.input.dto.TechnologyRequestDto;
 import reactivechallenge.pragma.techmanagementservice.model.TechnologyModel;
 import reactor.core.publisher.Mono;
@@ -56,8 +56,7 @@ class TechnologyHandlerTest {
 
         // Assert
         StepVerifier.create(responseMono)
-                .expectErrorMatches(throwable -> throwable instanceof ResponseStatusException
-                        && ((ResponseStatusException) throwable).getStatusCode() == HttpStatus.BAD_REQUEST)
+                .expectErrorMatches(BusinessDomainException.class::isInstance)
                 .verify();
     }
 
@@ -75,8 +74,7 @@ class TechnologyHandlerTest {
 
         // Assert
         StepVerifier.create(responseMono)
-                .expectErrorMatches(throwable -> throwable instanceof ResponseStatusException
-                        && ((ResponseStatusException) throwable).getStatusCode() == HttpStatus.BAD_REQUEST)
+                .expectErrorMatches(BusinessDomainException.class::isInstance)
                 .verify();
     }
 

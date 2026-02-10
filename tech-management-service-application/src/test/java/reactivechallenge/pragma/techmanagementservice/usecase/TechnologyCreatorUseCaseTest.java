@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactivechallenge.pragma.techmanagementservice.error.BusinessDomainException;
 import reactivechallenge.pragma.techmanagementservice.model.TechnologyModel;
 import reactivechallenge.pragma.techmanagementservice.spi.ITechnologyRepositoryPort;
 import reactor.core.publisher.Mono;
@@ -52,14 +53,14 @@ class TechnologyCreatorUseCaseTest {
     @DisplayName("Create technology throws exception when name is null")
     void createTechnologyThrowsExceptionWhenNameIsNull() {
         // Arrange
-        TechnologyModel inputModel = new TechnologyModel(null, null, "Description");
+        TechnologyModel inputModel;
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                technologyCreatorUseCase.createTechnology(inputModel)
+        BusinessDomainException exception = assertThrows(BusinessDomainException.class, () ->
+                new TechnologyModel(null, null, "Description")
         );
 
-        assertEquals("El nombre no puede ser nulo", exception.getMessage());
+        assertEquals("El campo name no puede estar vacío", exception.getMessage());
 
         verify(technologyRepositoryPort, times(0)).save(any());
     }
@@ -68,14 +69,13 @@ class TechnologyCreatorUseCaseTest {
     @DisplayName("Create technology throws exception when name is empty or blank")
     void createTechnologyThrowsExceptionWhenNameIsBlank() {
         // Arrange
-        TechnologyModel inputModel = new TechnologyModel(null, "   ", "Description");
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                technologyCreatorUseCase.createTechnology(inputModel)
+        BusinessDomainException exception = assertThrows(BusinessDomainException.class, () ->
+                new TechnologyModel(null, "   ", "Description")
         );
 
-        assertEquals("El nombre no puede estar vacío", exception.getMessage());
+        assertEquals("El campo name no puede estar vacío", exception.getMessage());
 
         verify(technologyRepositoryPort, times(0)).save(any());
     }

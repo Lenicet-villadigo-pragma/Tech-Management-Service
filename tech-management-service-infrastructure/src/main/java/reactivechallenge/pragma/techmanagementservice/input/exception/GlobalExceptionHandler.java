@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
-import reactivechallenge.pragma.techmanagementservice.error.RegisterAlreadyExistsException;
+import reactivechallenge.pragma.techmanagementservice.error.BusinessDomainException;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -43,10 +43,10 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
 
     private HttpStatus determineStatus(Throwable ex) {
         return switch (ex) {
-            case RegisterAlreadyExistsException e -> HttpStatus.CONFLICT;
+            case BusinessDomainException e -> HttpStatus.CONFLICT;
             case IllegalArgumentException e-> HttpStatus.BAD_REQUEST;
             case WebExchangeBindException e-> HttpStatus.BAD_REQUEST;
-            case ResponseStatusException e ->HttpStatus.valueOf(e.getStatusCode().value());
+            case GenericDataBaseException e ->HttpStatus.CONFLICT;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
     }

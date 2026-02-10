@@ -24,21 +24,11 @@ public class TechnologyHandler {
 
     public Mono<ServerResponse> createTechnology(ServerRequest request) {
         return request.bodyToMono(TechnologyRequestDto.class)
-                .flatMap(this::validate)
                 .map(TechnologyRequestDto::toModel)
                 .flatMap(technologyCreatorServicePort::createTechnology)
                 .map(TechnologyResponseDto::fromModel)
                 .flatMap(dto -> ServerResponse.status(HttpStatus.CREATED)
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(dto));
-    }
-
-    private Mono<TechnologyRequestDto> validate(TechnologyRequestDto dto) {
-        Errors errors = new BeanPropertyBindingResult(dto, "dto");
-        validator.validate(dto, errors);
-        if (errors.hasErrors()) {
-            return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, errors.getAllErrors().toString()));
-        }
-        return Mono.just(dto);
     }
 }

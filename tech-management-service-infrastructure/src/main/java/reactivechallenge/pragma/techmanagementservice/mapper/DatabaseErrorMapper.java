@@ -1,7 +1,7 @@
 package reactivechallenge.pragma.techmanagementservice.mapper;
 
-import reactivechallenge.pragma.techmanagementservice.error.RegisterAlreadyExistsException;
-import reactivechallenge.pragma.techmanagementservice.error.GenericDataBaseException;
+import reactivechallenge.pragma.techmanagementservice.error.BusinessDomainException;
+import reactivechallenge.pragma.techmanagementservice.input.exception.GenericDataBaseException;
 
 public class DatabaseErrorMapper {
 
@@ -12,7 +12,7 @@ public class DatabaseErrorMapper {
         if (e instanceof org.springframework.dao.DataIntegrityViolationException) {
 
             if (e.getMessage().contains("technology.name_tecnology_unique")) {
-                return new RegisterAlreadyExistsException("Ya existe una tecnología con ese nombre registrado.");
+                return new BusinessDomainException("Ya existe una tecnología con ese nombre registrado.");
             }
 
             return new GenericDataBaseException("Error de integridad: verifica los datos enviados.");
