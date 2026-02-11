@@ -29,6 +29,10 @@ subprojects {
         imports {
             mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
         }
+        dependencies {
+            dependency("org.springdoc:springdoc-openapi-starter-webflux-ui:2.6.0")
+            dependency("io.asyncer:r2dbc-mysql:1.0.2")
+        }
     }
 
     dependencies {
@@ -42,5 +46,3 @@ subprojects {
         useJUnitPlatform()
     }
 }
-
-
