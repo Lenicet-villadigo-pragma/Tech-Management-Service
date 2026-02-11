@@ -8,6 +8,8 @@ import reactivechallenge.pragma.techmanagementservice.out.repository.ITechnology
 import reactivechallenge.pragma.techmanagementservice.spi.ITechnologyRepositoryPort;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Component
 public record TechnologyRepositoryImpl(
         ITechnologyRepository technologyRepository,
@@ -18,6 +20,14 @@ public record TechnologyRepositoryImpl(
     public Mono<TechnologyModel> save(TechnologyModel technologyModel) {
         return technologyRepository.save(technologyEntityMapper.toEntity(technologyModel))
                 .map(technologyEntityMapper::toModel)
+                .onErrorMap(DatabaseErrorMapper::map);
+    }
+
+    @Override
+    public Mono<Boolean> exists(List<Long> ids) {
+        return technologyRepository.findAllById(ids)
+                .collectList()
+                .map(listTechs -> listTechs.size() == ids.size())
                 .onErrorMap(DatabaseErrorMapper::map);
     }
 }

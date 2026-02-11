@@ -1,4 +1,4 @@
-package reactivechallenge.pragma.techmanagementservice.input.exception;
+package reactivechallenge.pragma.techmanagementservice.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebExchangeBindException;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import reactivechallenge.pragma.techmanagementservice.error.BusinessDomainException;
 import reactor.core.publisher.Mono;

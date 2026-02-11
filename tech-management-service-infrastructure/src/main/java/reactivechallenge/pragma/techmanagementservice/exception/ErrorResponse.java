@@ -1,4 +1,4 @@
-package reactivechallenge.pragma.techmanagementservice.input.exception;
+package reactivechallenge.pragma.techmanagementservice.exception;
 
 import java.time.LocalDateTime;
 

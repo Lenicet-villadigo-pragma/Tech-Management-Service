@@ -9,8 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import reactivechallenge.pragma.techmanagementservice.input.dto.TechnologyRequestDto;
-import reactivechallenge.pragma.techmanagementservice.input.dto.TechnologyResponseDto;
+import reactivechallenge.pragma.techmanagementservice.input.dto.CreateTechnologyRequestDto;
+import reactivechallenge.pragma.techmanagementservice.input.dto.CreateTechnologyResponseDto;
 import reactivechallenge.pragma.techmanagementservice.input.handler.TechnologyHandler;
 import reactor.core.publisher.Mono;
 
@@ -30,13 +30,13 @@ class TechnologyRouterTest {
     @DisplayName("Router routes POST /create to handler")
     void createTechnologyRouteTest() {
         // Arrange
-        TechnologyRequestDto requestDto = new TechnologyRequestDto("Java", "Programming Language");
-        TechnologyResponseDto responseDto = new TechnologyResponseDto("Java", "Programming Language");
+        CreateTechnologyRequestDto requestDto = new CreateTechnologyRequestDto("Java", "Programming Language");
+        CreateTechnologyResponseDto responseDto = new CreateTechnologyResponseDto("Java", "Programming Language");
 
         when(technologyHandler.createTechnology(any())).thenReturn(
             ServerResponse.created(java.net.URI.create("/create"))
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(responseDto), TechnologyResponseDto.class)
+                .body(Mono.just(responseDto), CreateTechnologyResponseDto.class)
         );
 
         WebTestClient webTestClient = WebTestClient
@@ -51,7 +51,60 @@ class TechnologyRouterTest {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(TechnologyResponseDto.class)
+                .expectBody(CreateTechnologyResponseDto.class)
                 .isEqualTo(responseDto);
     }
+
+    @Test
+    @DisplayName("Router routes GET /verify to handler and returns true when exists")
+    void verifyTechnologyExistsRouteReturnsTrue() {
+        // Arrange
+        Long techId = 1L;
+
+        when(technologyHandler.verifyIfTechnologyExist(any())).thenReturn(
+                ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(true)
+        );
+
+        WebTestClient webTestClient = WebTestClient
+                .bindToRouterFunction(technologyRouter.technologyRoutes(technologyHandler))
+                .build();
+
+        // Act & Assert
+        webTestClient.get()
+                .uri("/exists", techId)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(Boolean.class)
+                .isEqualTo(true);
+    }
+
+    @Test
+    @DisplayName("Router routes GET /verify to handler and returns false when not exists")
+    void verifyTechnologyExistsRouteReturnsFalse() {
+        // Arrange
+        Long techId = 999L;
+
+        when(technologyHandler.verifyIfTechnologyExist(any())).thenReturn(
+                ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(false)
+        );
+
+        WebTestClient webTestClient = WebTestClient
+                .bindToRouterFunction(technologyRouter.technologyRoutes(technologyHandler))
+                .build();
+
+        // Act & Assert
+        webTestClient.get()
+                .uri("/exists", techId)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(Boolean.class)
+                .isEqualTo(false);
+    }
+
 }

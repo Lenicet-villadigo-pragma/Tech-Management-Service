@@ -53,7 +53,7 @@ class TechnologyCreatorUseCaseTest {
     @DisplayName("Create technology throws exception when name is null")
     void createTechnologyThrowsExceptionWhenNameIsNull() {
         // Arrange
-        TechnologyModel inputModel;
+
 
         // Act & Assert
         BusinessDomainException exception = assertThrows(BusinessDomainException.class, () ->
@@ -79,4 +79,6 @@ class TechnologyCreatorUseCaseTest {
 
         verify(technologyRepositoryPort, times(0)).save(any());
     }
+
+
 }

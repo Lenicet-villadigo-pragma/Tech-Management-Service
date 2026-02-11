@@ -2,9 +2,11 @@ spring:
   webflux:
     base-path: /technologies
   r2dbc:
+    # URL limpia
     url: r2dbc:mysql://<tu_url>:<tu_port>/<tu_bd>
     username: tu_user
     password: tu_password
+    # Parámetros del Driver
     properties:
       sslMode: DISABLED
       serverTimezone: UTC

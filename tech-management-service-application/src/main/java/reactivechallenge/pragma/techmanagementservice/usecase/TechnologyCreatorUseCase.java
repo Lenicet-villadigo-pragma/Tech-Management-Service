@@ -1,7 +1,7 @@
 package reactivechallenge.pragma.techmanagementservice.usecase;
 
 import reactivechallenge.pragma.techmanagementservice.api.IRegisterTechnologyServicePort;
-import reactivechallenge.pragma.techmanagementservice.model.IStringVerifier;
+import reactivechallenge.pragma.techmanagementservice.validator.IStringVerifier;
 import reactivechallenge.pragma.techmanagementservice.model.TechnologyModel;
 import reactivechallenge.pragma.techmanagementservice.spi.ITechnologyRepositoryPort;
 import reactor.core.publisher.Mono;

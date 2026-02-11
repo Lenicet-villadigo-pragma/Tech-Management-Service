@@ -1,7 +1,7 @@
 package reactivechallenge.pragma.techmanagementservice.mapper;
 
 import reactivechallenge.pragma.techmanagementservice.error.BusinessDomainException;
-import reactivechallenge.pragma.techmanagementservice.input.exception.GenericDataBaseException;
+import reactivechallenge.pragma.techmanagementservice.exception.GenericDataBaseException;
 
 public class DatabaseErrorMapper {
 
