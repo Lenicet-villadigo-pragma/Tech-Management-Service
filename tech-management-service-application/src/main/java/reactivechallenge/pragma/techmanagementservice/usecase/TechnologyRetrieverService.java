@@ -4,11 +4,15 @@ import reactivechallenge.pragma.techmanagementservice.api.IRetrieveTechnologySer
 import reactivechallenge.pragma.techmanagementservice.spi.ITechnologyRepositoryPort;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class TechnologyRetrieverService implements IRetrieveTechnologyServicePort {
 
     private final ITechnologyRepositoryPort technologyRepositoryPort;
+
 
     public TechnologyRetrieverService(ITechnologyRepositoryPort technologyRepositoryPort){
         this.technologyRepositoryPort = technologyRepositoryPort;
@@ -17,5 +21,25 @@ public class TechnologyRetrieverService implements IRetrieveTechnologyServicePor
     @Override
     public Mono<Boolean> verifyIfExists(List<Long> ids) {
         return technologyRepositoryPort.exists(ids);
+    }
+
+    @Override
+    public List<Long> verifyTechIds(String techIdsAsString){
+        Optional<String> techIdsAsStringOpt = Optional.ofNullable(techIdsAsString);
+        List<String> techIds = techIdsAsStringOpt
+                .map(idList -> Arrays.stream(idList.split(","))
+                        .map(idString -> idString.replaceAll("[\"/\\\\]", "").trim())
+                        .toList())
+                .orElse(Collections.emptyList());
+
+        if(techIds.isEmpty()){
+            throw new IllegalArgumentException("No se proporcionaron IDs de tecnologías. Asegúrate de incluir el " +
+                    "parámetro 'techIds' con al menos un ID.");
+        }
+        if(techIds.stream().anyMatch(id -> !id.matches("\\d+"))){
+            throw new IllegalArgumentException("Formato de IDs inválido. Todos los IDs deben ser números.");
+        }
+
+        return techIds.stream().map(Long::valueOf).toList();
     }
 }

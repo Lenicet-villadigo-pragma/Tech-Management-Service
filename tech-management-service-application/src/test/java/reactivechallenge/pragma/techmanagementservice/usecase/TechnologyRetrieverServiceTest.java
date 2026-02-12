@@ -95,4 +95,56 @@ class TechnologyRetrieverServiceTest {
 
         verify(technologyRepositoryPort).exists(null);
     }
+
+    @Test
+    @DisplayName("verifyTechIds retorna lista de Longs a partir de string de ids separados por comas")
+    void verifyTechIdsReturnsListOfLongs() {
+        // Arrange
+        String techIdsAsString = "1, 2, 3";
+
+        // Act
+        List<Long> result = technologyRetrieverService.verifyTechIds(techIdsAsString);
+
+        // Assert
+        assert result.equals(List.of(1L, 2L, 3L));
+    }
+
+    @Test
+    @DisplayName("verifyTechIds lanza IllegalArgumentException cuando se pasa un string nulo")
+    void verifyTechIdsThrowExeptionWhenNullString() {
+        // Arrange
+        RuntimeException exceptionExpected = new IllegalArgumentException("No se proporcionaron IDs de tecnologías. Asegúrate de incluir el " +
+                "parámetro 'techIds' con al menos un ID.");
+        RuntimeException exceptionObtained=null;
+
+        // Act
+        try {
+            technologyRetrieverService.verifyTechIds(null);
+        } catch (IllegalArgumentException e) {
+            exceptionObtained = e;
+        }
+
+        // Assert
+        assert exceptionObtained!=null && exceptionObtained.getMessage().equals(exceptionExpected.getMessage());
+    }
+
+    @Test
+    @DisplayName("verifyTechIds lanza IllegalArgumentException cuando se pasa un string de letras separados por coma")
+    void verifyTechIdsThrowExeptionWhenStringIsNotNumbers() {
+        // Arrange
+        String ids = "a, b, c";
+        RuntimeException exceptionExpected = new IllegalArgumentException("Formato de IDs inválido. Todos los IDs deben ser números.");
+        RuntimeException exceptionObtained=null;
+
+        // Act
+        try {
+            technologyRetrieverService.verifyTechIds(ids);
+        } catch (IllegalArgumentException e) {
+            exceptionObtained = e;
+        }
+
+        // Assert
+        assert exceptionObtained!=null && exceptionObtained.getMessage().equals(exceptionExpected.getMessage());
+    }
+
 }
