@@ -1,5 +1,6 @@
 package reactivechallenge.pragma.techmanagementservice.input.handler;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.reactive.function.server.EntityResponse;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactivechallenge.pragma.techmanagementservice.api.IRegisterTechnologyServicePort;
@@ -14,12 +16,12 @@ import reactivechallenge.pragma.techmanagementservice.api.IRetrieveTechnologySer
 import reactivechallenge.pragma.techmanagementservice.error.BusinessDomainException;
 import reactivechallenge.pragma.techmanagementservice.input.dto.CreateTechnologyRequestDto;
 import reactivechallenge.pragma.techmanagementservice.model.TechnologyModel;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -151,6 +153,82 @@ class TechnologyHandlerTest {
         )
                 .expectError(IllegalArgumentException.class)
                 .verify();
+    }
+
+    @Test
+    @DisplayName("Se obtiene error al intentar obtener tecnologías por ids cuando no se envían techIds")
+    void getTechnologiesByIdFailsWithInvalidTechIds() {
+        // Arrange
+        ServerRequest request = mock(ServerRequest.class);
+        IllegalArgumentException error =new IllegalArgumentException("No se proporcionaron IDs de tecnologías. Asegúrate de incluir el " +
+                "parámetro 'techIds' con al menos un ID.");
+
+        given(request.queryParam("techIds")).willReturn(Optional.empty());
+        given(retrieveTechnologyServicePort.verifyTechIds(null)).willThrow(error);
+
+        // Act & Assert
+        StepVerifier.create(
+                        Mono.defer(() -> technologyHandler.getTechnologiesById(request))
+                )
+                .expectError(IllegalArgumentException.class)
+                .verify();
+    }
+
+    @Test
+    @DisplayName("get technology by id returns empty list when ids do not exist")
+    void getTechnologiesByIdReturnsEmpty() {
+        // Arrange
+        String techId = "999";
+        List<Long> techIds= List.of(999L);
+        ServerRequest request = mock(ServerRequest.class);
+
+        given(request.queryParam("techIds")).willReturn(Optional.of(techId));
+        given(retrieveTechnologyServicePort.verifyTechIds(techId)).willReturn(techIds);
+        given(retrieveTechnologyServicePort.getTechnologiesByIds(techIds)).willReturn(Flux.empty());
+
+        // Act
+        Mono<ServerResponse> responseMono = technologyHandler.getTechnologiesById(request);
+
+        // Assert
+        StepVerifier.create(responseMono)
+                .assertNext(serverResponse -> {
+                    Assertions.assertEquals(HttpStatus.OK, serverResponse.statusCode());
+
+                    if (serverResponse instanceof EntityResponse<?> entityResponse) {
+                        List<?> body = (List<?>) entityResponse.entity();
+                        Assertions.assertTrue(body.isEmpty());
+                    }
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    @DisplayName("get technology by id returns list when ids does exist")
+    void getTechnologiesByIdReturnsData() {
+        // Arrange
+        String techId = "999";
+        List<Long> techIds= List.of(999L);
+        ServerRequest request = mock(ServerRequest.class);
+        TechnologyModel technologyModel = new TechnologyModel(999L, "TechName", "TechDescription");
+
+        given(request.queryParam("techIds")).willReturn(Optional.of(techId));
+        given(retrieveTechnologyServicePort.verifyTechIds(techId)).willReturn(techIds);
+        given(retrieveTechnologyServicePort.getTechnologiesByIds(techIds)).willReturn(Flux.just(technologyModel));
+
+        // Act
+        Mono<ServerResponse> responseMono = technologyHandler.getTechnologiesById(request);
+
+        // Assert
+        StepVerifier.create(responseMono)
+                .assertNext(serverResponse -> {
+                    Assertions.assertEquals(HttpStatus.OK, serverResponse.statusCode());
+
+                    if (serverResponse instanceof EntityResponse<?> entityResponse) {
+                        List<?> body = (List<?>) entityResponse.entity();
+                        Assertions.assertEquals(1, body.size());
+                    }
+                })
+                .verifyComplete();
     }
 
 

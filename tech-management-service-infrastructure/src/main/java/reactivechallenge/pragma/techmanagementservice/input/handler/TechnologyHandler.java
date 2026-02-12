@@ -11,12 +11,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactivechallenge.pragma.techmanagementservice.input.dto.ListTechnologiesResponseDto;
-import reactivechallenge.pragma.techmanagementservice.model.TechnologyModel;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,8 +53,8 @@ public class TechnologyHandler {
                 .flatMap(retrieveTechnologyServicePort::getTechnologiesByIds)
                 .map(ListTechnologiesResponseDto::fromModel)
                 .collectList()
-                .flatMap(dto -> ServerResponse.status(HttpStatus.CREATED)
+                .flatMap(listDto -> ServerResponse.status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(dto));
+                        .bodyValue(listDto));
     }
 }
