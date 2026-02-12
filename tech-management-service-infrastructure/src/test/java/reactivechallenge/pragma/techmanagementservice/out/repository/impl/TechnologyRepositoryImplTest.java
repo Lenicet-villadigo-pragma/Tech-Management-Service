@@ -105,4 +105,66 @@ class TechnologyRepositoryImplTest {
                 .verifyComplete();
         verify(technologyRepository).findAllById(techId);
     }
+
+    @Test
+    @DisplayName("Get all technologies by ids successfully")
+    void getAllTechnologiesByIdsSuccess() {
+        // Arrange
+        List<Long> techIds = List.of(1L, 2L);
+        TechnologyEntity entity1 = new TechnologyEntity(1L, "Java", "Description");
+        TechnologyEntity entity2 = new TechnologyEntity(2L, "Python", "Description");
+        TechnologyModel model1 = new TechnologyModel(1L, "Java", "Description");
+        TechnologyModel model2 = new TechnologyModel(2L, "Python", "Description");
+
+        when(technologyRepository.findAllById(techIds)).thenReturn(Flux.just(entity1, entity2));
+        when(technologyEntityMapper.toModel(entity1)).thenReturn(model1);
+        when(technologyEntityMapper.toModel(entity2)).thenReturn(model2);
+
+        // Act
+        Flux<TechnologyModel> result = technologyRepositoryImpl.findAllById(techIds);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectNext(model1)
+                .expectNext(model2)
+                .verifyComplete();
+        verify(technologyRepository).findAllById(techIds);
+    }
+
+    @Test
+    @DisplayName("Get all technologies by ids successfully even when the list is empty")
+    void getAllTechnologiesByIdsSuccessForEmptyList() {
+        // Arrange
+        List<Long> techIds = List.of(1L, 2L);
+
+        when(technologyRepository.findAllById(techIds)).thenReturn(Flux.empty());
+
+        // Act
+        Flux<TechnologyModel> result = technologyRepositoryImpl.findAllById(techIds);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectNextCount(0)
+                .verifyComplete();
+        verify(technologyRepository).findAllById(techIds);
+    }
+
+    @Test
+    @DisplayName("Get all technologies by ids maps exception to GenericDataBaseException")
+    void getAllTechnologiesByIdsMapsException() {
+        // Arrange
+        List<Long> techIds = List.of(1L, 2L);
+        RuntimeException exception = new RuntimeException("Database error");
+
+        when(technologyRepository.findAllById(techIds)).thenReturn(Flux.error(exception));
+
+        // Act
+        Flux<TechnologyModel> result = technologyRepositoryImpl.findAllById(techIds);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectError(GenericDataBaseException.class)
+                .verify();
+        verify(technologyRepository).findAllById(techIds);
+    }
 }

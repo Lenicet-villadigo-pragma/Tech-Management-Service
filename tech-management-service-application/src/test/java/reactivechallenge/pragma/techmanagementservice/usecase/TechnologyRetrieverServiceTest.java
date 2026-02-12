@@ -6,7 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactivechallenge.pragma.techmanagementservice.model.TechnologyModel;
 import reactivechallenge.pragma.techmanagementservice.spi.ITechnologyRepositoryPort;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -94,5 +96,24 @@ class TechnologyRetrieverServiceTest {
                 .verifyComplete();
 
         verify(technologyRepositoryPort).exists(null);
+    }
+
+    @Test
+    @DisplayName("getAllTechnologiesById returns list of technologies when they exist")
+    void getTechnologiesByIdsReturnsList() {
+        // Arrange
+        List<Long> techIds = List.of(1L);
+        TechnologyModel technologyModel=new TechnologyModel(null, "Java", "Programming language");
+        when(technologyRepositoryPort.findAllById(techIds)).thenReturn(Flux.just(technologyModel));
+
+        // Act
+        Flux<TechnologyModel> result = technologyRetrieverService.getTechnologiesByIds(techIds);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectNext(technologyModel)
+                .verifyComplete();
+
+        verify(technologyRepositoryPort).findAllById(techIds);
     }
 }
