@@ -12,10 +12,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TechnologyRetrieverServiceTest {
@@ -167,5 +167,37 @@ class TechnologyRetrieverServiceTest {
                 .verifyComplete();
 
         verify(technologyRepositoryPort).findAllById(techIds);
+    }
+
+    @Test
+    @DisplayName("getAllTechnologiesById returns empty when list of ids is empty")
+    void getTechnologiesByIdsReturnsEmpty() {
+        // Arrange
+        List<Long> techIds = new ArrayList<>();
+
+
+        // Act
+        Flux<TechnologyModel> result = technologyRetrieverService.getTechnologiesByIds(techIds);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectNextCount(0)
+                .verifyComplete();
+
+        verify(technologyRepositoryPort, never()).findAllById(techIds);
+    }
+
+    @Test
+    @DisplayName("getAllTechnologiesById returns empty when list of ids is null")
+    void getTechnologiesByIdsReturnsEmpty2() {
+        // Act
+        Flux<TechnologyModel> result = technologyRetrieverService.getTechnologiesByIds(null);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectNextCount(0)
+                .verifyComplete();
+
+        verify(technologyRepositoryPort, never()).findAllById(null);
     }
 }

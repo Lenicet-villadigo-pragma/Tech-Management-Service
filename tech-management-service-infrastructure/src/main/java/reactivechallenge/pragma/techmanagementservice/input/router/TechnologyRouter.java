@@ -51,8 +51,8 @@ public class TechnologyRouter {
                                     content = @Content(schema = @Schema(implementation = CreateTechnologyRequestDto.class))
                             )
                     )
-            ),
-            @RouterOperation(
+            )
+            ,@RouterOperation(
                     path = "/exists",
                     produces = {
                             MediaType.APPLICATION_JSON_VALUE
@@ -77,12 +77,36 @@ public class TechnologyRouter {
                             }
                     )
             )
+            ,@RouterOperation(
+            path = "/getByIds",
+            produces = {
+                    MediaType.APPLICATION_JSON_VALUE
+            },
+            method = RequestMethod.GET,
+            beanClass = TechnologyHandler.class,
+            beanMethod = "getTechnologiesById",
+            operation = @Operation(
+                    operationId = "getTechnologiesById",
+                    summary = "Obtener tecnologías por sus ids",
+                    description = "Consulta las tecnologías por Id y devuelve su información.",
+                    tags = {"Gestión de Tecnologías"},
+                    responses = {
+                            @ApiResponse(
+                                    responseCode = "200",
+                                    description = "Technologies retrieved",
+                                    content = @Content(schema = @Schema(implementation = Boolean.class))
+                            )
+                    },
+                    parameters = {
+                            @Parameter(in = ParameterIn.QUERY, name = "techIds", description = "list of Technology IDs")
+                    }
+            )
+    )
     })
     public RouterFunction<ServerResponse> technologyRoutes(TechnologyHandler technologyHandler) {
-        return RouterFunctions.route(
-                POST("/create").and(accept(MediaType.APPLICATION_JSON)),
-                        technologyHandler::createTechnology)
-                .andRoute(GET("/exists"),
-                        technologyHandler::verifyIfTechnologyExist);
+        return RouterFunctions
+                .route(POST("/create").and(accept(MediaType.APPLICATION_JSON)), technologyHandler::createTechnology)
+                .andRoute(GET("/exists"), technologyHandler::verifyIfTechnologyExist)
+                .andRoute(GET("/getByIds"), technologyHandler::getTechnologiesById);
     }
 }

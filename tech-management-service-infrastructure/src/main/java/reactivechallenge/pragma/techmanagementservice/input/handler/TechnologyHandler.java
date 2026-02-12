@@ -10,6 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactivechallenge.pragma.techmanagementservice.input.dto.ListTechnologiesResponseDto;
+import reactivechallenge.pragma.techmanagementservice.model.TechnologyModel;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
@@ -48,6 +51,13 @@ public class TechnologyHandler {
        return retrieveTechnologyServicePort.verifyTechIds(stringTechIds.orElse(null));
     }
 
-
-
+    public Mono<ServerResponse> getTechnologiesById(ServerRequest request) {
+        return Flux.just(getTechIdsFromRequest(request))
+                .flatMap(retrieveTechnologyServicePort::getTechnologiesByIds)
+                .map(ListTechnologiesResponseDto::fromModel)
+                .collectList()
+                .flatMap(dto -> ServerResponse.status(HttpStatus.CREATED)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(dto));
+    }
 }
