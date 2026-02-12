@@ -1,4 +1,4 @@
-package reactivechallenge.pragma.techmanagementservice.model;
+package reactivechallenge.pragma.techmanagementservice.validator;
 
 public interface IStringVerifier {
     default String verify(String value) {

@@ -1,8 +1,9 @@
 package reactivechallenge.pragma.techmanagementservice.model;
 
 import reactivechallenge.pragma.techmanagementservice.error.BusinessDomainException;
+import reactivechallenge.pragma.techmanagementservice.validator.IStringVerifier;
 
-public record TechnologyModel(Long id, String name, String description) implements IStringVerifier{
+public record TechnologyModel(Long id, String name, String description) implements IStringVerifier {
     public TechnologyModel{
         validateField(name, "name");
         validateField(description, "description");
