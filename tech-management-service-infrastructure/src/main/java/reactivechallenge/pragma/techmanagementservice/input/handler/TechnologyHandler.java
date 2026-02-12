@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -43,21 +44,8 @@ public class TechnologyHandler {
     }
 
     private List<Long> getTechIdsFromRequest(ServerRequest request) {
-        List<String> techIds = request.queryParam("techIds")
-                .map(idList -> Arrays.stream(idList.split(","))
-                        .map(idString -> idString.replaceAll("[\"/\\\\]", "").trim())
-                        .toList())
-                .orElse(Collections.emptyList());
-
-        if(techIds.isEmpty()){
-            throw new IllegalArgumentException("No se proporcionaron IDs de tecnologías. Asegúrate de incluir el " +
-                    "parámetro 'techIds' con al menos un ID.");
-        }
-        if(techIds.stream().anyMatch(id -> !id.matches("\\d+"))){
-            throw new IllegalArgumentException("Formato de IDs inválido. Todos los IDs deben ser números.");
-        }
-
-        return techIds.stream().map(Long::valueOf).toList();
+       Optional<String> stringTechIds =  request.queryParam("techIds");
+       return retrieveTechnologyServicePort.verifyTechIds(stringTechIds.orElse(null));
     }
 
 

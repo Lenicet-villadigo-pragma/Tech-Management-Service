@@ -107,6 +107,23 @@ class TechnologyRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("Exists maps DataAccessException to GenericDataBaseException")
+    void existsMapsException() {
+        // Arrange
+        List<Long> techId = List.of(1L);
+        when(technologyRepository.findAllById(techId)).thenReturn(Flux.error(new RuntimeException("Database error")));
+
+        // Act
+        Mono<Boolean> result = technologyRepositoryImpl.exists(techId);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectError(GenericDataBaseException.class)
+                .verify();
+        verify(technologyRepository).findAllById(techId);
+    }
+
+    @Test
     @DisplayName("Get all technologies by ids successfully")
     void getAllTechnologiesByIdsSuccess() {
         // Arrange
