@@ -23,7 +23,7 @@ import reactor.test.StepVerifier;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -108,7 +108,8 @@ class TechnologyHandlerTest {
         ServerRequest request = mock(ServerRequest.class);
 
         given(request.queryParam("techIds")).willReturn(Optional.of(id1));
-        given(retrieveTechnologyServicePort.verifyIfExists(techId)).willReturn(Mono.just(true));
+        given(retrieveTechnologyServicePort.verifyIfExists(anyList())).willReturn(Mono.just(true));
+        given(retrieveTechnologyServicePort.verifyTechIds(anyString())).willReturn(techId);
 
         // Act
         Mono<ServerResponse> responseMono = technologyHandler.verifyIfTechnologyExist(request);
@@ -128,7 +129,8 @@ class TechnologyHandlerTest {
         ServerRequest request = mock(ServerRequest.class);
 
         given(request.queryParam("techIds")).willReturn(Optional.of(techId));
-        given(retrieveTechnologyServicePort.verifyIfExists(techIds)).willReturn(Mono.just(false));
+        given(retrieveTechnologyServicePort.verifyIfExists(anyList())).willReturn(Mono.just(false));
+        given(retrieveTechnologyServicePort.verifyTechIds(anyString())).willReturn(techIds);
 
         // Act
         Mono<ServerResponse> responseMono = technologyHandler.verifyIfTechnologyExist(request);
@@ -146,6 +148,7 @@ class TechnologyHandlerTest {
         ServerRequest request = mock(ServerRequest.class);
 
         given(request.queryParam("techIds")).willReturn(Optional.empty());
+        given(retrieveTechnologyServicePort.verifyTechIds(null)).willThrow(new IllegalArgumentException());
 
         // Act & Assert
         StepVerifier.create(
