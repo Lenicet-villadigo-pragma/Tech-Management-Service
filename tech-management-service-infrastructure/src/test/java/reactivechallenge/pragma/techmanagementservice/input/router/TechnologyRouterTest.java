@@ -11,8 +11,11 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactivechallenge.pragma.techmanagementservice.input.dto.CreateTechnologyRequestDto;
 import reactivechallenge.pragma.techmanagementservice.input.dto.CreateTechnologyResponseDto;
+import reactivechallenge.pragma.techmanagementservice.input.dto.ListTechnologiesResponseDto;
 import reactivechallenge.pragma.techmanagementservice.input.handler.TechnologyHandler;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -105,6 +108,33 @@ class TechnologyRouterTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody(Boolean.class)
                 .isEqualTo(false);
+    }
+
+    @Test
+    @DisplayName("Router routes GET /getTechnologiesById to handler and returns list when exists")
+    void getTechnologyByIdsRouteReturnsList() {
+        // Arrange
+        Long techId = 1L;
+        ListTechnologiesResponseDto listTechnologiesResponseDto = new ListTechnologiesResponseDto(1L,"java");
+
+        when(technologyHandler.getTechnologiesById(any())).thenReturn(
+                ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(List.of(listTechnologiesResponseDto))
+        );
+
+        WebTestClient webTestClient = WebTestClient
+                .bindToRouterFunction(technologyRouter.technologyRoutes(technologyHandler))
+                .build();
+
+        // Act & Assert
+        webTestClient.get()
+                .uri("/getByIds", techId)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBodyList(ListTechnologiesResponseDto.class)
+                .hasSize(1);
     }
 
 }
