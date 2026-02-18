@@ -11,4 +11,5 @@ public interface ITechnologyRepositoryPort {
     Mono<TechnologyModel> save(TechnologyModel technologyModel);
     Mono<Boolean> exists(List<Long> ids);
     Flux<TechnologyModel> findAllById(List<Long> ids);
+    Mono<Void> delteByIds(List<Long> ids);
 }

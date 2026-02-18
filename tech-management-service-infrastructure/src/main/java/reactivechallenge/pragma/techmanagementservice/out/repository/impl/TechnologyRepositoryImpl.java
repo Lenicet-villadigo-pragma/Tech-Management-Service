@@ -9,10 +9,8 @@ import reactivechallenge.pragma.techmanagementservice.spi.ITechnologyRepositoryP
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Component
 public record TechnologyRepositoryImpl(
@@ -43,5 +41,10 @@ public record TechnologyRepositoryImpl(
                 .onErrorMap(DatabaseErrorMapper::map);
     }
 
+    @Override
+    public Mono<Void> delteByIds(List<Long> ids) {
+        return technologyRepository.deleteAllById(ids)
+                .onErrorMap(DatabaseErrorMapper::map);
+    }
 
 }

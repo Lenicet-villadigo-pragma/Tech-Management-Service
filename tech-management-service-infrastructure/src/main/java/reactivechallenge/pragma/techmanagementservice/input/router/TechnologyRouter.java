@@ -99,14 +99,40 @@ public class TechnologyRouter {
                     },
                     parameters = {
                             @Parameter(in = ParameterIn.QUERY, name = "techIds", description = "list of Technology IDs")
-                    }
+                    })
             )
-    )
+            ,@RouterOperation(
+                    path = "/deleteByIds",
+                    produces = {
+                            MediaType.APPLICATION_JSON_VALUE
+                    },
+                    method = RequestMethod.DELETE,
+                    beanClass = TechnologyHandler.class,
+                    beanMethod = "deleteTechnologiesById",
+                    operation = @Operation(
+                            operationId = "deleteTechnologiesById",
+                            summary = "Borrar las tecnologías que tengan los ids enviados",
+                            description = "Consulta las tecnologías por Id y si existen serán borradas.",
+                            tags = {"Gestión de Tecnologías"},
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "Eliminado exitosamente",
+                                            content = @Content(schema = @Schema(implementation = String.class))
+                                    )
+                                    , @ApiResponse(responseCode = "500", description = "Error interno en la base de datos")
+                            },
+                            parameters = {
+                                    @Parameter(in = ParameterIn.QUERY, name = "techIds", description = "list of Technology IDs")
+                            }
+                    )
+            )
     })
     public RouterFunction<ServerResponse> technologyRoutes(TechnologyHandler technologyHandler) {
         return RouterFunctions
                 .route(POST("/create").and(accept(MediaType.APPLICATION_JSON)), technologyHandler::createTechnology)
                 .andRoute(GET("/exists"), technologyHandler::verifyIfTechnologyExist)
-                .andRoute(GET("/getByIds"), technologyHandler::getTechnologiesById);
+                .andRoute(GET("/getByIds"), technologyHandler::getTechnologiesById)
+                .andRoute(DELETE("/deleteByIds"), technologyHandler::deleteTechnologiesById);
     }
 }

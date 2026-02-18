@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.server.EntityResponse;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactivechallenge.pragma.techmanagementservice.api.IDeleteTechnologyServicePort;
 import reactivechallenge.pragma.techmanagementservice.api.IRegisterTechnologyServicePort;
 import reactivechallenge.pragma.techmanagementservice.api.IRetrieveTechnologyServicePort;
 import reactivechallenge.pragma.techmanagementservice.error.BusinessDomainException;
@@ -36,11 +37,15 @@ class TechnologyHandlerTest {
     @Mock
     private IRetrieveTechnologyServicePort retrieveTechnologyServicePort;
 
+    @Mock
+    private IDeleteTechnologyServicePort deleteTechnologyServicePort;
+
     private TechnologyHandler technologyHandler;
 
     @BeforeEach
     void setUp() {
-        technologyHandler = new TechnologyHandler(technologyCreatorServicePort, retrieveTechnologyServicePort);
+        technologyHandler = new TechnologyHandler(technologyCreatorServicePort, retrieveTechnologyServicePort
+        , deleteTechnologyServicePort);
     }
 
     @Test

@@ -1,6 +1,7 @@
 package reactivechallenge.pragma.techmanagementservice.input.handler;
 
 import lombok.RequiredArgsConstructor;
+import reactivechallenge.pragma.techmanagementservice.api.IDeleteTechnologyServicePort;
 import reactivechallenge.pragma.techmanagementservice.api.IRegisterTechnologyServicePort;
 import reactivechallenge.pragma.techmanagementservice.api.IRetrieveTechnologyServicePort;
 import reactivechallenge.pragma.techmanagementservice.input.dto.CreateTechnologyRequestDto;
@@ -23,6 +24,7 @@ public class TechnologyHandler {
 
     private final IRegisterTechnologyServicePort technologyCreatorServicePort;
     private final IRetrieveTechnologyServicePort retrieveTechnologyServicePort;
+    private final IDeleteTechnologyServicePort deleteTechnologyServicePort;
 
     public Mono<ServerResponse> createTechnology(ServerRequest request) {
         return request.bodyToMono(CreateTechnologyRequestDto.class)
@@ -56,5 +58,10 @@ public class TechnologyHandler {
                 .flatMap(listDto -> ServerResponse.status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(listDto));
+    }
+
+    public Mono<ServerResponse> deleteTechnologiesById(ServerRequest serverRequest){
+        return deleteTechnologyServicePort.deleteAllTechsWithIds(getTechIdsFromRequest(serverRequest))
+                .then(ServerResponse.ok().bodyValue("Eliminado exitosamente"));
     }
 }
