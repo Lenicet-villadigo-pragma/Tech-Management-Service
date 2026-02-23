@@ -2,7 +2,12 @@ package reactivechallenge.pragma.techmanagementservice.model;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import reactivechallenge.pragma.techmanagementservice.error.BusinessDomainException;
+
+import java.util.stream.Stream;
 
 class TechnologyModelTest {
 
@@ -24,15 +29,16 @@ class TechnologyModelTest {
         Assertions.assertNull(businessDomainException);
     }
 
-    @Test
-    void buildTechModelThrowError_emptyName(){
+    @ParameterizedTest
+    @MethodSource("provideInvalidTechnologyData")
+    void buildTechModelThrowError(String name, String description, String expectedMessage) {
         // Arrange
         TechnologyModel technologyModel = null;
         BusinessDomainException businessDomainException = null;
 
         // Act
         try {
-            technologyModel = new TechnologyModel(null, "", "description");
+            technologyModel = new TechnologyModel(null, name, description);
         } catch (Exception e) {
             businessDomainException = new BusinessDomainException(e.getMessage());
         }
@@ -40,67 +46,19 @@ class TechnologyModelTest {
         //Assert
         Assertions.assertNotNull(businessDomainException);
         Assertions.assertNull(technologyModel);
-        Assertions.assertEquals("El campo name no puede estar vacío", businessDomainException.getMessage());
+        Assertions.assertEquals(expectedMessage, businessDomainException.getMessage());
     }
 
-    @Test
-    void buildTechModelThrowError_emptyDescription(){
-        // Arrange
-        TechnologyModel technologyModel = null;
-        BusinessDomainException businessDomainException = null;
-
-        // Act
-        try {
-            technologyModel = new TechnologyModel(null, "name", "");
-        } catch (Exception e) {
-            businessDomainException = new BusinessDomainException(e.getMessage());
-        }
-
-        //Assert
-        Assertions.assertNotNull(businessDomainException);
-        Assertions.assertNull(technologyModel);
-        Assertions.assertEquals("El campo description no puede estar vacío", businessDomainException.getMessage());
+    private static Stream<Arguments> provideInvalidTechnologyData() {
+        return Stream.of(
+                Arguments.of("", "description", "El campo name no puede estar vacío"),
+                Arguments.of("name", "", "El campo description no puede estar vacío"),
+                Arguments.of("0123456789 0123456789 0123456789 0123456789 0123456789 0123456789",
+                        "description", "El campo name no puede tener más de 50 caracteres"),
+                Arguments.of("name",
+                        "0123456789 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789",
+                        "El campo description no puede tener más de 90 caracteres")
+        );
     }
-
-    @Test
-    void buildTechModelThrowError_tooLongName(){
-        // Arrange
-        TechnologyModel technologyModel = null;
-        BusinessDomainException businessDomainException = null;
-
-        // Act
-        try {
-            technologyModel = new TechnologyModel(null, "0123456789 0123456789 0123456789 0123456789 0123456789 0123456789"
-                    , "description");
-        } catch (Exception e) {
-            businessDomainException = new BusinessDomainException(e.getMessage());
-        }
-
-        //Assert
-        Assertions.assertNotNull(businessDomainException);
-        Assertions.assertNull(technologyModel);
-        Assertions.assertEquals("El campo name no puede tener más de 50 caracteres", businessDomainException.getMessage());
-    }
-
-    @Test
-    void buildTechModelThrowError_tooLongDescription(){
-        // Arrange
-        TechnologyModel technologyModel = null;
-        BusinessDomainException businessDomainException = null;
-
-        // Act
-        try {
-            technologyModel = new TechnologyModel(null, "name"
-                    , "0123456789 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789");
-        } catch (Exception e) {
-            businessDomainException = new BusinessDomainException(e.getMessage());
-        }
-
-        //Assert
-        Assertions.assertNotNull(businessDomainException);
-        Assertions.assertNull(technologyModel);
-        Assertions.assertEquals("El campo description no puede tener más de 90 caracteres", businessDomainException.getMessage());
-    }
-
-    
 }
+
